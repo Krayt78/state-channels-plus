@@ -152,14 +152,6 @@ class DisputeHandler {
             this.addProof(Number(forkCnt), proofs[i]);
         let _dispute = this.disputes.get(Number(forkCnt));
         if (!_dispute) {
-            const log_prefix = "[DisputeHandler]-[createDispute]";
-            console.log(log_prefix, "Creating dispute for forkCnt:", forkCnt);
-            console.log(log_prefix, "Signer address:", this.signerAddress);
-            console.log(
-                log_prefix,
-                "Before getFinalizedAndLatestWithVotes call"
-            );
-
             let {
                 encodedLatestFinalizedState,
                 encodedLatestCorrectState,
@@ -169,25 +161,6 @@ class DisputeHandler {
                 this.signerAddress
             );
 
-            console.log(
-                log_prefix,
-                "After getFinalizedAndLatestWithVotes call"
-            );
-            console.log(
-                log_prefix,
-                "encodedLatestFinalizedState:",
-                encodedLatestFinalizedState
-            );
-            console.log(
-                log_prefix,
-                "encodedLatestCorrectState:",
-                encodedLatestCorrectState
-            );
-            console.log(
-                log_prefix,
-                "virtualVotingBlocks length:",
-                virtualVotingBlocks.length
-            );
             //TODO? - connect signer to the contract in constructor?
             try {
                 this.p2pEventHooks.onInitiatingDispute?.();
