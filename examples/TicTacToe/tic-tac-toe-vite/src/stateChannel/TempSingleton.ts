@@ -90,7 +90,7 @@ class TempSingleton {
             contracts.TicTacToeStateChannelManagerInstance,
             contracts.TicTacToeSmInstance,
             {
-                onConnection: async (address) => {
+                onConnection: async (address: string) => {
                     //TODO! This is only for tests - currently
                     console.log("onConnection");
                     this.setOpponentAddress(address);
@@ -191,8 +191,8 @@ class TempSingleton {
         this.p2pSigner.setJc(this.joinChanel, signedJoinChannel);
         this.p2pSigner.connectToChannel(channelIdHash);
 
-        this.p2pContract.on(
-            this.p2pContract.filters.MoveMade,
+        this.p2pContract?.on(
+            this.p2pContract?.filters.MoveMade,
             (
                 address: string,
                 row: BigNumberish,
@@ -210,8 +210,8 @@ class TempSingleton {
                 ]);
             }
         );
-        this.p2pContract.on(
-            this.p2pContract.filters.GameOver,
+        this.p2pContract?.on(
+            this.p2pContract?.filters.GameOver,
             (winnerCell: BigNumberish) => {
                 //reset game
                 setTimeout(async () => {

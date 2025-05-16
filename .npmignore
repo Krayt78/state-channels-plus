@@ -14,5 +14,8 @@ hardhat.config.ts
 # Ignore all .tgz files
 *.tgz
 
+# Ignore source maps
+**/*.js.map
+
 # Ignore test contracts
 contracts/test

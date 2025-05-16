@@ -18,8 +18,8 @@
             "@typechain-types": ["typechain-types/index"]
         }
     },
-    "exclude": ["examples", "dist", "node_modules"],
-    "ts-node": {
-        "require": ["tsconfig-paths/register"]
-    }
+    "exclude": ["examples", "dist", "node_modules"]
+    // "ts-node": { // Commenting out to test runtime behavior
+    //     "require": ["tsconfig-paths/register"]
+    // }
 }
