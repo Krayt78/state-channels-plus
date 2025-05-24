@@ -1,6 +1,7 @@
 import {
     TransactionStruct,
     SignedBlockStruct,
+    StateSnapshotStruct,
     BlockStruct
 } from "@typechain-types/contracts/V1/DataTypes";
 import {
@@ -10,6 +11,7 @@ import {
     SignatureLike,
     ethers
 } from "ethers";
+import { StateSnapshotStorage } from "@/storage";
 import AgreementManager from "../agreementManager/AgreementManager";
 import { AgreementFlag, ExecutionFlags, TimeConfig } from "@/types";
 import { AStateChannelManagerProxy } from "@typechain-types";
@@ -52,13 +54,15 @@ class StateManager {
     self = DEBUG_STATE_MANAGER ? DebugProxy.createProxy(this) : this;
     isDisposed: boolean = false;
     validationService: ValidationService;
+    snapshotStorage: StateSnapshotStorage;
     constructor(
         signer: ethers.Signer,
         signerAddress: AddressLike,
         stateChannelManagerContract: AStateChannelManagerProxy,
         stateMachine: AStateMachine,
         timeConfig: TimeConfig,
-        p2pEventHooks: P2pEventHooks
+        p2pEventHooks: P2pEventHooks,
+        options: { persistSnapshots?: boolean } = {}
     ) {
         this.signerAddress = signerAddress;
         this.stateMachine = stateMachine;
@@ -90,7 +94,44 @@ class StateManager {
             this.signerAddress,
             this.onSignedBlock.bind(this)
         );
+        this.snapshotStorage = new StateSnapshotStorage({
+            persist: options.persistSnapshots ?? false
+        });
+
+        this.initializeStorage();
     }
+    private async initializeStorage(): Promise<void> {
+        try {
+            await this.snapshotStorage.initialize();
+            console.log("StateSnapshot storage initialized successfully");
+        } catch (error) {
+            console.error("Failed to initialize StateSnapshot storage:", error);
+        }
+    }
+
+    /**
+     * Store a state snapshot
+     */
+    private async storeStateSnapshot(
+        forkCnt: number,
+        blockHeight: number,
+        snapshot: StateSnapshotStruct
+    ): Promise<void> {
+        await this.snapshotStorage.store(forkCnt, blockHeight, snapshot, {
+            wait: false
+        });
+    }
+
+    /**
+     * Get a state snapshot
+     */
+    public async getStateSnapshot(
+        forkCnt: number,
+        blockHeight: number
+    ): Promise<StateSnapshotStruct | null> {
+        return await this.snapshotStorage.get(forkCnt, blockHeight);
+    }
+
     //Mark resources for garbage collection
     public async dispose() {
         this.isDisposed = true;

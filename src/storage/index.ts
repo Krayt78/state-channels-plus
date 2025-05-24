@@ -1,1 +1,1 @@
-export { AgnosticStorage } from "./AgnosticStorage";
+export { AgnosticStorage, StateSnapshotStorage } from "./AgnosticStorage";
